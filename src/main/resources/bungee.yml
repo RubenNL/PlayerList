@@ -1,0 +1,4 @@
+name: Playerlist
+version: '${project.version}'
+main: net.cubekrowd.playerlist.Playerlist
+description: Shows which players are on which servers.
