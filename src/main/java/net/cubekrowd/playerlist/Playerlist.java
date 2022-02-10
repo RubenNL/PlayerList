@@ -11,8 +11,6 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public final class Playerlist extends Plugin {
 	private HttpServer server;
@@ -27,22 +25,22 @@ public final class Playerlist extends Plugin {
 		Map<String,ServerDTO> servers=new HashMap<>();
 		for(ProxiedPlayer player: this.getProxy().getPlayers()) {
 			String serverName=player.getServer().getInfo().getName();
-			if(!servers.containsKey(serverName)) servers.put(serverName,new ServerDTO(serverName));
+			System.out.println(serverName);
+			if(servers.get(serverName)==null) servers.put(serverName,new ServerDTO(serverName));
 			servers.get(serverName).addPlayer(player);
 		}
+		System.out.println(servers);
 		return servers.values().stream().toList();
 	}
 	public void initialize() {
 		try {
 			server = HttpServer.create(
-					new InetSocketAddress("0.0.0.0", 8081),
+					new InetSocketAddress("localhost",8081),
 					0
 			);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
 		server.createContext("/data.json", exchange -> {
 			exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -56,10 +54,14 @@ public final class Playerlist extends Plugin {
 
 			OutputStream outputStream = exchange.getResponseBody();
 			Gson gson = new Gson();
-			String res = gson.toJson(getData());
-
+			List<ServerDTO> servers=getData();
+			String res = "";
+			try {
+				res = gson.toJson(servers);
+			} catch (Exception e) {
+				e.printStackTrace(System.out);
+			}
 			byte[] bytes = res.getBytes();
-
 			exchange.sendResponseHeaders(200, bytes.length);
 
 			try {
@@ -68,10 +70,10 @@ public final class Playerlist extends Plugin {
 				outputStream.close();
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.out.println("failed to write");
+				e.printStackTrace(System.out);
 			}
 		});
-
-		server.setExecutor(threadPoolExecutor);
 		server.start();
 		System.out.println("Server started on port 8081");
 	}
