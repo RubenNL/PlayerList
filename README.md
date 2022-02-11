@@ -31,3 +31,9 @@ Now, copy the full `frontend/dist` folder to a public webserver.
 # Done!
 
 Open your webpage.
+
+# pre-build from github
+
+You can also download the latest version from github. Currently, this doesn't have a config option, so it only works on localhost(the default setting).
+
+you can find it here: [![Release](https://github.com/RubenNL/PlayerList/actions/workflows/release.yml/badge.svg)](https://github.com/RubenNL/PlayerList/actions/workflows/release.yml) Click here on the top item. There you will find a link for "release". This contains a zip, which has the frontend and the jar file.
