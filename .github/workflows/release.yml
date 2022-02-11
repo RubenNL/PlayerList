@@ -8,7 +8,7 @@ on:
       - ci
 
 jobs:
-  bungee:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +32,12 @@ jobs:
 
       - run: cd frontend && npm ci
       - run: cd frontend && npm run build
-
+      - name: create release folder
+      - run: |
+          mkdir release
+          mv frontend/dist release/frontend
+          mv target/playerlist-1.0-SNAPSHOT.jar release/playerlist.jar
       - uses: actions/upload-artifact@v2
         with:
           name: release
-          path: |
-            target/playerlist-1.0-SNAPSHOT.jar
-            frontend/dist
+          path: release
