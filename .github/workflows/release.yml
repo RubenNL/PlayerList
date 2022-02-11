@@ -33,7 +33,7 @@ jobs:
       - run: cd frontend && npm ci
       - run: cd frontend && npm run build
       - name: create release folder
-      - run: |
+        run: |
           mkdir release
           mv frontend/dist release/frontend
           mv target/playerlist-1.0-SNAPSHOT.jar release/playerlist.jar
