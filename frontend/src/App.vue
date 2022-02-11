@@ -1,28 +1,27 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div>
+    <div v-if="servers == null">Loading...</div>
+    <div v-else v-for="server in servers" :key="server.name">
+      {{ server.name }}
+      <ul>
+        <li v-for="player in server.playerNames" :key="player">{{ player }}</li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-
 export default {
   name: "App",
-  components: {
-    HelloWorld,
+  data: () => {
+    return {
+      servers: null,
+    };
+  },
+  mounted() {
+    fetch(window.dataUrl)
+      .then((data) => data.json())
+      .then((data) => (this.servers = data));
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
