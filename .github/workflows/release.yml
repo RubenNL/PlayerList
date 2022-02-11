@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - ci
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'maven'
+      - name: Set up node
+        uses: actions/setup-node@v2
+        with:
+          cache-dependency-path: frontend/package-lock.json
+          node-version: 16
+          cache: 'npm'
+
+      - name: Build with Maven
+        run: mvn --batch-mode package
+
+      - run: cd frontend && npm ci
+      - run: cd frontend && npm run build
+      - name: create release folder
+        run: |
+          mkdir release
+          mv frontend/dist release/frontend
+          mv target/playerlist-1.0-SNAPSHOT.jar release/playerlist.jar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: release
