@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import settings from "@/settings";
+
 export default {
   name: "App",
   data: () => {
@@ -27,7 +29,7 @@ export default {
     };
   },
   mounted() {
-    fetch(window.dataUrl)
+    fetch(settings.url + "/data.json")
       .then((data) => data.json())
       .then((data) => (this.servers = data));
   },
