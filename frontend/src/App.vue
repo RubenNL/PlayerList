@@ -1,36 +1,36 @@
 <template>
-  <v-container v-if="!this.hasUrl">
-    <v-text-field v-model="url" />
-    <v-btn @click="get">go!</v-btn>
-  </v-container>
-  <div v-else-if="servers == null">Loading...</div>
-  <v-expansion-panels v-else>
-    <v-expansion-panel v-for="server in servers" :key="server.name">
-      <v-expansion-panel-header>
-        {{ server.name }}({{ server.players.length }})
-      </v-expansion-panel-header>
-      <v-expansion-panel-content>
-        <v-list>
-          <v-list-item v-for="player in server.players" :key="player.name">
-            <v-list-item-content>
-              <v-container align="center" justify="center">
-                <img
-                  style="image-rendering: pixelated"
-                  :src="`https://crafatar.com/avatars/${player.uuid}?size=8`"
-                  height="64px"
-                  width="64px"
-                  class="img"
-                  alt=""
-                />
-                <br />
-                {{ player.name }}
-              </v-container>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-  </v-expansion-panels>
+  <v-app>
+    <v-container v-if="!this.hasUrl">
+      <v-text-field v-model="url" />
+      <v-btn @click="get">go!</v-btn>
+    </v-container>
+    <div v-else-if="servers == null">Loading...</div>
+    <v-expansion-panels v-else>
+      <v-expansion-panel v-for="server in servers" :key="server.name">
+        <v-expansion-panel-header>
+          {{ server.name }}({{ server.players.length }})
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-tooltip v-for="player in server.players" :key="player.name" bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <img
+                v-bind="attrs"
+                v-on="on"
+                style="image-rendering: pixelated"
+                :src="`https://crafatar.com/avatars/${player.uuid}?size=8`"
+                height="32px"
+                width="32px"
+                :alt="player.name"
+              />
+            </template>
+            <span>
+              {{ player.name }}
+            </span>
+          </v-tooltip>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+  </v-app>
 </template>
 
 <script>
