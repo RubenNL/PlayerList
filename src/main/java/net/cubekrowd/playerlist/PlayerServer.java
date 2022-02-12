@@ -2,6 +2,7 @@ package net.cubekrowd.playerlist;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
+import lombok.Getter;
 import net.cubekrowd.playerlist.response.ServerDTO;
 
 import java.io.IOException;
@@ -9,12 +10,13 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-import static net.cubekrowd.playerlist.response.GetData.getData;
-
 public class PlayerServer {
 	private HttpServer server;
 	private Playerlist plugin;
+	@Getter
+	private int port;
 	public PlayerServer(Playerlist plugin, int port) {
+		this.port=port;
 		this.plugin=plugin;
 		initialize(port);
 	}
@@ -39,7 +41,7 @@ public class PlayerServer {
 
 			OutputStream outputStream = exchange.getResponseBody();
 			Gson gson = new Gson();
-			List<ServerDTO> servers=getData(plugin.getProxy());
+			List<ServerDTO> servers=plugin.getData(plugin);
 			String res = "";
 			try {
 				res = gson.toJson(servers);

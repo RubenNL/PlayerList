@@ -1,5 +1,7 @@
 package net.cubekrowd.playerlist;
 
+import net.cubekrowd.playerlist.response.ServerDTO;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -9,10 +11,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class Playerlist extends Plugin {
 	private PlayerServer playerServer;
+	private Configuration config;
 	@Override
 	public void onEnable() {
 		saveDefaultConfig("config.yml");
@@ -47,14 +52,22 @@ public final class Playerlist extends Plugin {
 			return new Configuration();
 		}
 	}
+	public List<ServerDTO> getData(Playerlist plugin) {
+		List<String> exclude=this.config.getStringList("exclude");
+		List<String> include=this.config.getStringList("include");
+
+		List<ServerInfo> servers=plugin.getProxy().getServersCopy().values().stream().toList();
+
+		if(include.size()>0) servers=servers.stream().filter(server->include.contains(server.getName())).collect(Collectors.toList()); //includes
+		servers=servers.stream().filter(server->!exclude.contains(server.getName())).collect(Collectors.toList()); //excludes
+		return servers.stream().map(ServerDTO::new).collect(Collectors.toList()); //Create ServerDTO's.
+	}
 	public void reloadFromConfig() {
 		getLogger().info("Reloading configuration...");
-		var configConfig = loadConfig("config.yml");
+		this.config = loadConfig("config.yml");
 		if(this.playerServer != null) this.playerServer.stop();
-		int port=configConfig.getInt("port");
+		int port=this.config.getInt("port");
 		getLogger().info("Starting server on port "+port);
 		this.playerServer=new PlayerServer(this, port);
 	}
-
-
 }
