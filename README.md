@@ -16,7 +16,7 @@ As an alternative, you can follow the "hard mode" below.
 * Choose a port to have the plugin function on. Make sure this port is open(no firewall)
 * Edit the `config.yml` in the plugin folder. Set the port number here.
 * In bungee, run `/playerlist reload`. This reloads the config, and starts the server on the port of your choosing.
-* go to `https://rubennl.github.io/PlayerList/?https://<your ip>:<your port>`. example: `https://rubennl.github.io/PlayerList/?https://example.com:8081
+* go to `https://rubennl.github.io/PlayerList/?https://<your ip>:<your port>`. example: `https://rubennl.github.io/PlayerList/?https://example.com:8081`
 * (optional) embed this page with an iFrame on your server website. `<iframe src="https://rubennl.github.io/PlayerList/?https://example.com:8081" />`
 
 # Hard mode
