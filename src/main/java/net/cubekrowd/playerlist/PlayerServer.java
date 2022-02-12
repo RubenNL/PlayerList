@@ -41,7 +41,13 @@ public class PlayerServer {
 
 			OutputStream outputStream = exchange.getResponseBody();
 			Gson gson = new Gson();
-			List<ServerDTO> servers=plugin.getData(plugin);
+			List<ServerDTO> servers;
+			try {
+				servers=plugin.getData(plugin);
+			} catch (Exception e) {
+				e.printStackTrace(System.out);
+				return;
+			}
 			String res = "";
 			try {
 				res = gson.toJson(servers);

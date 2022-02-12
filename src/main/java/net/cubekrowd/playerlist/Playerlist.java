@@ -58,9 +58,9 @@ public final class Playerlist extends Plugin {
 
 		List<ServerInfo> servers=plugin.getProxy().getServersCopy().values().stream().toList();
 
-		if(include.size()>0) servers=servers.stream().filter(server->include.contains(server.getName())).collect(Collectors.toList()); //includes
-		servers=servers.stream().filter(server->!exclude.contains(server.getName())).collect(Collectors.toList()); //excludes
-		return servers.stream().map(ServerDTO::new).collect(Collectors.toList()); //Create ServerDTO's.
+		if(!include.isEmpty()) servers=servers.stream().filter(server->include.contains(server.getName())).toList(); //includes
+		servers=servers.stream().filter(server->!exclude.contains(server.getName())).toList(); //excludes
+		return servers.stream().map(ServerDTO::new).toList(); //Create ServerDTO's.
 	}
 	public void reloadFromConfig() {
 		getLogger().info("Reloading configuration...");

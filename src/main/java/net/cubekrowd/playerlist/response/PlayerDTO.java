@@ -7,8 +7,8 @@ import java.util.UUID;
 
 @Getter
 public class PlayerDTO {
-	private String name;
-	private UUID uuid;
+	private final String name;
+	private final UUID uuid;
 	public PlayerDTO(ProxiedPlayer player) {
 		this.name=player.getDisplayName();
 		this.uuid=player.getUniqueId();
