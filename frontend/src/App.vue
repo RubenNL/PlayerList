@@ -5,7 +5,7 @@
       <v-btn @click="get">go!</v-btn>
     </v-container>
     <div v-else-if="servers == null">Loading...</div>
-    <v-expansion-panels v-else>
+    <v-expansion-panels v-else accordion>
       <v-expansion-panel v-for="server in servers" :key="server.name">
         <v-expansion-panel-header>
           {{ server.name }}({{ server.players.length }})
