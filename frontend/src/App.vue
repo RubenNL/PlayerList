@@ -9,7 +9,14 @@
         <v-list>
           <v-list-item v-for="player in server.players" :key="player.name">
             <v-list-item-content>
-              {{ player.name }}
+              <v-container>
+                <v-img
+                  :src="`https://crafatar.com/avatars/${player.uuid}`"
+                  height="160px"
+                  width="160px"
+                />
+                {{ player.name }}
+              </v-container>
             </v-list-item-content>
           </v-list-item>
         </v-list>
