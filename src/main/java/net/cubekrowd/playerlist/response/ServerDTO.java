@@ -1,4 +1,4 @@
-package net.cubekrowd.playerlist;
+package net.cubekrowd.playerlist.response;
 
 import lombok.Getter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

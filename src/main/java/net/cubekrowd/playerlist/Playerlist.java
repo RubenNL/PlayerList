@@ -53,7 +53,7 @@ public final class Playerlist extends Plugin {
 		if(this.playerServer != null) this.playerServer.stop();
 		int port=configConfig.getInt("port");
 		getLogger().info("Starting server on port "+port);
-		this.playerServer=new PlayerServer(this.getProxy(), port);
+		this.playerServer=new PlayerServer(this, port);
 	}
 
 
