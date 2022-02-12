@@ -13,6 +13,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'maven'
+ 
       - name: Set up node
         uses: actions/setup-node@v2
         with:
@@ -20,11 +27,19 @@ jobs:
           node-version: 16
           cache: 'npm'
 
+      - name: Build with Maven
+        run: mvn --batch-mode package
+
       - run: |
-          cd frontend && sed -i "`wc -l < vue.config.js`i\\publicPath: \"/PlayerList/\",\\" vue.config.js 
+          cd frontend && sed -i "`wc -l < vue.config.js`i\\publicPath: \"/PlayerList/\",\\" vue.config.js
       - run: cd frontend && npm ci
       - run: cd frontend && npm run build
       - run: touch frontend/dist/.nojekyll
+      
+      - run: |
+          cp target/playerlist-1.0-SNAPSHOT.jar frontend/dist/playerlist.jar
+          echo '# This version is only to be used with Github Pages, because it only works on `/PlayerList` as path.' > frontend/dist/README.md
+
       - name: Deploy to pages
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:
