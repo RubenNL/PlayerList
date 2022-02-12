@@ -32,3 +32,5 @@ jobs:
           folder: ./frontend/dist
           clean: true
           single-commit: true
+          git-config-name: 'github-actions'
+          git-config-email: '<>'
