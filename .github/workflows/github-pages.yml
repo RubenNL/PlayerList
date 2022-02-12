@@ -26,9 +26,8 @@ jobs:
       - run: cd frontend && npm run build
           
       - name: Deploy to pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4.2.3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: ./frontend/dist
           CLEAN: true
