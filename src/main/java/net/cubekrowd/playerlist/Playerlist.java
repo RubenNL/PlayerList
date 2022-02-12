@@ -32,7 +32,7 @@ public final class Playerlist extends Plugin {
 	public void initialize() {
 		try {
 			server = HttpServer.create(
-					new InetSocketAddress("localhost",8081),
+					new InetSocketAddress(8081),
 					0
 			);
 		} catch (IOException e) {
