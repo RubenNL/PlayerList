@@ -1,77 +1,73 @@
 package net.cubekrowd.playerlist;
 
-import com.google.gson.Gson;
-import com.sun.net.httpserver.HttpServer;
+import net.cubekrowd.playerlist.response.ServerDTO;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class Playerlist extends Plugin {
-	private HttpServer server;
+	private PlayerServer playerServer;
+	private Configuration config;
 	@Override
 	public void onEnable() {
-		initialize();
+		saveDefaultConfig("config.yml");
+		reloadFromConfig();
+		getProxy().getPluginManager().registerCommand(this, new PlayerListCommand(this));
 	}
 
 	@Override
-	public void onDisable() {}
-	public List<ServerDTO> getData() {
-		List<ServerDTO> servers = new ArrayList<>();
-		for(ServerInfo serverInfo: this.getProxy().getServersCopy().values()) {
-			ServerDTO serverDTO=new ServerDTO(serverInfo.getName());
-			serverInfo.getPlayers().forEach(serverDTO::addPlayer);
-			servers.add(serverDTO);
-		}
-		return servers;
+	public void onDisable() {
+		this.playerServer.stop();
 	}
-	public void initialize() {
+
+	public void saveDefaultConfig(String name) {
+		getDataFolder().mkdirs();
+
+		var configFile = new File(getDataFolder(), name);
 		try {
-			server = HttpServer.create(
-					new InetSocketAddress(8081),
-					0
-			);
+			Files.copy(getResourceAsStream(name), configFile.toPath());
+		} catch (FileAlreadyExistsException e) {
+			// ignore
 		} catch (IOException e) {
-			e.printStackTrace();
+			getLogger().log(Level.WARNING, "Can't save default config " + name, e);
 		}
+	}
 
-		server.createContext("/data.json", exchange -> {
-			exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+	public Configuration loadConfig(String name) {
+		var configProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+		try {
+			return configProvider.load(new File(getDataFolder(), name));
+		} catch (IOException e) {
+			getLogger().log(Level.WARNING, "Can't load config " + name, e);
+			return new Configuration();
+		}
+	}
+	public List<ServerDTO> getData(Playerlist plugin) {
+		List<String> exclude=this.config.getStringList("exclude");
+		List<String> include=this.config.getStringList("include");
 
-			if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
-				exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
-				exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
-				exchange.sendResponseHeaders(204, -1);
-				return;
-			}
+		List<ServerInfo> servers=plugin.getProxy().getServersCopy().values().stream().toList();
 
-			OutputStream outputStream = exchange.getResponseBody();
-			Gson gson = new Gson();
-			List<ServerDTO> servers=getData();
-			String res = "";
-			try {
-				res = gson.toJson(servers);
-			} catch (Exception e) {
-				e.printStackTrace(System.out);
-			}
-			byte[] bytes = res.getBytes();
-			exchange.sendResponseHeaders(200, bytes.length);
-
-			try {
-				outputStream.write(bytes);
-				outputStream.flush();
-				outputStream.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("failed to write");
-				e.printStackTrace(System.out);
-			}
-		});
-		server.start();
-		System.out.println("Server started on port 8081");
+		if(!include.isEmpty()) servers=servers.stream().filter(server->include.contains(server.getName())).toList(); //includes
+		servers=servers.stream().filter(server->!exclude.contains(server.getName())).toList(); //excludes
+		return servers.stream().map(ServerDTO::new).toList(); //Create ServerDTO's.
+	}
+	public void reloadFromConfig() {
+		getLogger().info("Reloading configuration...");
+		this.config = loadConfig("config.yml");
+		if(this.playerServer != null) this.playerServer.stop();
+		int port=this.config.getInt("port");
+		getLogger().info("Starting server on port "+port);
+		this.playerServer=new PlayerServer(this, port);
 	}
 }
