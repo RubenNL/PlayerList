@@ -24,7 +24,7 @@ jobs:
           cd frontend && sed -i "`wc -l < vue.config.js`i\\publicPath: \"/PlayerList/\",\\" vue.config.js 
       - run: cd frontend && npm ci
       - run: cd frontend && npm run build
-          
+      - run: touch frontend/dist/.nojekyll
       - name: Deploy to pages
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:
