@@ -3,13 +3,13 @@
   <v-expansion-panels v-else>
     <v-expansion-panel v-for="server in servers" :key="server.name">
       <v-expansion-panel-header>
-        {{ server.name }}({{ server.playerNames.length }})
+        {{ server.name }}({{ server.players.length }})
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-list>
-          <v-list-item v-for="player in server.playerNames" :key="player">
+          <v-list-item v-for="player in server.players" :key="player.name">
             <v-list-item-content>
-              {{ player }}
+              {{ player.name }}
             </v-list-item-content>
           </v-list-item>
         </v-list>

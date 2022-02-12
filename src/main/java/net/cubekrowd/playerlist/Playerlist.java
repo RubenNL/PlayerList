@@ -2,15 +2,14 @@ package net.cubekrowd.playerlist;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public final class Playerlist extends Plugin {
 	private HttpServer server;
@@ -22,15 +21,13 @@ public final class Playerlist extends Plugin {
 	@Override
 	public void onDisable() {}
 	public List<ServerDTO> getData() {
-		Map<String,ServerDTO> servers=new HashMap<>();
-		for(ProxiedPlayer player: this.getProxy().getPlayers()) {
-			String serverName=player.getServer().getInfo().getName();
-			System.out.println(serverName);
-			if(servers.get(serverName)==null) servers.put(serverName,new ServerDTO(serverName));
-			servers.get(serverName).addPlayer(player);
+		List<ServerDTO> servers = new ArrayList<>();
+		for(ServerInfo serverInfo: this.getProxy().getServersCopy().values()) {
+			ServerDTO serverDTO=new ServerDTO(serverInfo.getName());
+			serverInfo.getPlayers().forEach(serverDTO::addPlayer);
+			servers.add(serverDTO);
 		}
-		System.out.println(servers);
-		return servers.values().stream().toList();
+		return servers;
 	}
 	public void initialize() {
 		try {
